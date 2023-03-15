@@ -117,7 +117,7 @@
 (define-minor-mode emacs-nerd-icons-dired-mode
   "Display emacs-nerd-icons icon for each files in a Dired buffer."
   :lighter " emacs-nerd-icons-dired-mode"
-  (when (and (derived-mode-p 'dired-mode) (display-graphic-p))
+  (when (derived-mode-p 'dired-mode)
     (if emacs-nerd-icons-dired-mode
         (emacs-nerd-icons-dired--setup)
       (emacs-nerd-icons-dired--teardown))))
