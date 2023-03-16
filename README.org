@@ -4,6 +4,8 @@
 
 emacs-nerd-icons-dired is inspired by [[https://github.com/jtbm37/all-the-icons-dired][all-the-icons-dired]]
 
+[[file:screenshots/demo.png]]
+
 * Usage
 add ~emacs-nerd-icons-dired~ to the ~load-path~
 #+BEGIN_SRC emacs-lisp
