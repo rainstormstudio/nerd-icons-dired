@@ -1,23 +1,23 @@
-#+TITLE: emacs-nerd-icons-dired - Use emacs-nerd-icons for Dired
+#+TITLE: nerd-icons-dired - Use nerd-icons for Dired
 #+AUTHOR: Hongyu Ding
 #+LANGUAGE: en
 
-emacs-nerd-icons-dired is inspired by [[https://github.com/jtbm37/all-the-icons-dired][all-the-icons-dired]]
+nerd-icons-dired is inspired by [[https://github.com/jtbm37/all-the-icons-dired][all-the-icons-dired]]
 
 [[file:screenshots/demo.png]]
 
 * Usage
-add ~emacs-nerd-icons-dired~ to the ~load-path~
+add ~nerd-icons-dired~ to the ~load-path~
 #+BEGIN_SRC emacs-lisp
-  (require 'emacs-nerd-icons)
+  (require 'nerd-icons)
   ...
-  (require 'emacs-nerd-icons-dired)
-  (add-hook 'dired-mode-hook 'emacs-nerd-icons-dired-mode)
+  (require 'nerd-icons-dired)
+  (add-hook 'dired-mode-hook nerd-icons-dired-mode)
 #+END_SRC
 or using ~straight~ package
 #+BEGIN_SRC emacs-lisp
-  (use-package emacs-nerd-icons-dired
-    :straight (emacs-nerd-icons-dired :type git :host github :repo "rainstormstudio/emacs-nerd-icons-dired")
+  (use-package nerd-icons-dired
+    :straight (nerd-icons-dired :type git :host github :repo "rainstormstudio/nerd-icons-dired")
     :hook
-    (dired-mode . emacs-nerd-icons-dired-mode))
+    (dired-mode . nerd-icons-dired-mode))
 #+END_SRC
