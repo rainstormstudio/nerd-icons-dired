@@ -54,8 +54,33 @@
 
 (defvar nerd-icons-dired-mode)
 
+(defun nerd-icons-dired--add-overlay (pos string)
+  "Add overlay to display STRING at POS."
+  (let ((ov (make-overlay (1- pos) pos)))
+    (overlay-put ov 'nerd-icons-dired-overlay t)
+    (overlay-put ov 'after-string string)))
+
+(defun nerd-icons-dired--overlays-in (beg end)
+  "Get all nerd-icons-dired overlays between BEG to END."
+  (cl-remove-if-not
+   (lambda (ov)
+     (overlay-get ov 'nerd-icons-dired-overlay))
+   (overlays-in beg end)))
+
+(defun nerd-icons-dired--overlays-at (pos)
+  "Get nerd-icons-dired overlays at POS."
+  (apply #'nerd-icons-dired--overlays-in `(,pos ,pos)))
+
+(defun nerd-icons-dired--remove-all-overlays ()
+  "Remove all `nerd-icons-dired' overlays."
+  (save-restriction
+    (widen)
+    (mapc #'delete-overlay
+          (nerd-icons-dired--overlays-in (point-min) (point-max)))))
+
 (defun nerd-icons-dired--refresh ()
   "Display the icons of files in a Dired buffer."
+  (nerd-icons-dired--remove-all-overlays)
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
@@ -66,11 +91,10 @@
                             (nerd-icons-icon-for-dir file
                                                         :face 'nerd-icons-dired-dir-face
                                                         :v-adjust nerd-icons-dired-v-adjust)
-                          (nerd-icons-icon-for-file file :v-adjust nerd-icons-dired-v-adjust)))
-                  (inhibit-read-only t))
+                          (nerd-icons-icon-for-file file :v-adjust nerd-icons-dired-v-adjust))))
               (if (member file '("." ".."))
-                  (insert "  \t")
-                (insert (concat icon "\t")))))))
+                  (nerd-icons-dired--add-overlay (point) "  \t")
+                (nerd-icons-dired--add-overlay (point) (concat icon "\t")))))))
       (forward-line 1))))
 
 (defun nerd-icons-dired--refresh-advice (fn &rest args)
@@ -99,7 +123,8 @@
   (advice-remove 'dired-internal-do-deletions #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-narrow--internal #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-insert-subdir #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-do-kill-lines #'nerd-icons-dired--refresh-advice))
+  (advice-remove 'dired-do-kill-lines #'nerd-icons-dired--refresh-advice)
+  (nerd-icons-dired--remove-all-overlays))
 
 ;;;###autoload
 (define-minor-mode nerd-icons-dired-mode
