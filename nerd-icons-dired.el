@@ -42,8 +42,7 @@
 (require 'nerd-icons)
 
 (defface nerd-icons-dired-dir-face
-  '((((background dark)) :foreground "white")
-    (((background light)) :foreground "black"))
+  '((t nil))
   "Face for the directory icon."
   :group 'nerd-icons-faces)
 
