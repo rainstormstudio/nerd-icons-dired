@@ -14,7 +14,7 @@ add ~nerd-icons-dired~ to the ~load-path~
   (require 'nerd-icons)
   ...
   (require 'nerd-icons-dired)
-  (add-hook 'dired-mode-hook nerd-icons-dired-mode)
+  (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
 #+END_SRC
 or using ~straight~ package
 #+BEGIN_SRC emacs-lisp
