@@ -86,9 +86,10 @@
 
 (defun nerd-icons-dired--refresh-advice (fn &rest args)
   "Advice function for FN with ARGS."
-  (apply fn args)
-  (when nerd-icons-dired-mode
-    (nerd-icons-dired--refresh)))
+  (let ((result (apply fn args))) ;; Save the result of the advised function
+    (when nerd-icons-dired-mode
+      (nerd-icons-dired--refresh))
+    result)) ;; Return the result
 
 (defun nerd-icons-dired--setup ()
   "Setup `nerd-icons-dired'."
