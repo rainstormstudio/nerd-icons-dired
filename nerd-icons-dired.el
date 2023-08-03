@@ -80,8 +80,8 @@
                           (nerd-icons-icon-for-file file :v-adjust nerd-icons-dired-v-adjust)))
                   (inhibit-read-only t))
               (if (member file '("." ".."))
-                  (insert (propertize "  \t" 'category 'dired-icon))
-                (insert (propertize (concat icon "\t") 'category 'dired-icon)))))))
+                  (insert (propertize "   " 'category 'dired-icon))
+                (insert (propertize (concat icon " ") 'category 'dired-icon)))))))
       (forward-line 1))))
 
 (defun nerd-icons-dired--refresh-advice (fn &rest args)
