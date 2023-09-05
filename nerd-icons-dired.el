@@ -112,6 +112,8 @@
     (advice-add 'dired-revert :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-internal-do-deletions :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-insert-subdir :around #'nerd-icons-dired--refresh-advice)
+    (advice-add 'dired-create-directory :around #'nerd-icons-dired--refresh-advice)
+    (advice-add 'dired-kill-subdir :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-do-kill-lines :around #'nerd-icons-dired--refresh-advice)
     (with-eval-after-load 'dired-narrow
       (advice-add 'dired-narrow--internal :around #'nerd-icons-dired--refresh-advice))
@@ -125,6 +127,8 @@
   (advice-remove 'dired-narrow--internal #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-insert-subdir #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-do-kill-lines #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'dired-create-directory #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'dired-kill-subdir #'nerd-icons-dired--refresh-advice)
   (nerd-icons-dired--remove-all-overlays))
 
 ;;;###autoload
