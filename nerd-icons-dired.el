@@ -93,8 +93,8 @@
                           (nerd-icons-icon-for-file file :v-adjust nerd-icons-dired-v-adjust)))
                   (inhibit-read-only t))
               (if (member file '("." ".."))
-                  (nerd-icons-dired--add-overlay (point) "  \t")
-                (nerd-icons-dired--add-overlay (point) (concat icon "\t")))))))
+                  (nerd-icons-dired--add-overlay (dired-move-to-filename) "  \t")
+                (nerd-icons-dired--add-overlay (dired-move-to-filename) (concat icon "\t")))))))
       (forward-line 1))))
 
 (defun nerd-icons-dired--refresh-advice (fn &rest args)
@@ -113,6 +113,7 @@
     (advice-add 'dired-internal-do-deletions :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-insert-subdir :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-create-directory :around #'nerd-icons-dired--refresh-advice)
+    (advice-add 'dired-do-redisplay :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-kill-subdir :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-do-kill-lines :around #'nerd-icons-dired--refresh-advice)
     (with-eval-after-load 'dired-narrow
@@ -128,6 +129,7 @@
   (advice-remove 'dired-insert-subdir #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-do-kill-lines #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-create-directory #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'dired-do-redisplay #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-kill-subdir #'nerd-icons-dired--refresh-advice)
   (nerd-icons-dired--remove-all-overlays))
 
