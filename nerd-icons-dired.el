@@ -119,7 +119,9 @@
     (with-eval-after-load 'dired-narrow
       (advice-add 'dired-narrow--internal :around #'nerd-icons-dired--refresh-advice))
     (with-eval-after-load 'dired-subtree
-      (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice))
+      (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice)
+      (advice-add 'dired-subtree-insert :around #'nerd-icons-dired--refresh-advice)
+      (advice-add 'dired-subtree-remove :around #'nerd-icons-dired--refresh-advice))
     (nerd-icons-dired--refresh)))
 
 (defun nerd-icons-dired--teardown ()
@@ -129,6 +131,8 @@
   (advice-remove 'dired-internal-do-deletions #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-narrow--internal #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-subtree-toggle #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'dired-subtree-insert #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'dired-subtree-remove #'nerd-icons-dired--refresh-advice)  
   (advice-remove 'dired-insert-subdir #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-do-kill-lines #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-create-directory #'nerd-icons-dired--refresh-advice)
