@@ -120,6 +120,8 @@
       (advice-add 'dired-narrow--internal :around #'nerd-icons-dired--refresh-advice))
     (with-eval-after-load 'dired-subtree
       (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice))
+    (with-eval-after-load 'wdired
+      (advice-add 'wdired-abort-changes :around #'nerd-icons-dired--refresh-advice))
     (nerd-icons-dired--refresh)))
 
 (defun nerd-icons-dired--teardown ()
@@ -134,6 +136,7 @@
   (advice-remove 'dired-create-directory #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-do-redisplay #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-kill-subdir #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'wdired-abort-changes #'nerd-icons-dired--refresh-advice)
   (nerd-icons-dired--remove-all-overlays))
 
 ;;;###autoload
