@@ -57,7 +57,11 @@
   "Add overlay to display STRING at POS."
   (let ((ov (make-overlay (1- pos) pos)))
     (overlay-put ov 'nerd-icons-dired-overlay t)
-    (overlay-put ov 'after-string string)))
+    (overlay-put ov 'after-string
+                 ;; Workaround for the issue where overlapping faces
+                 ;; are not applied
+                 ;; https://github.com/rainstormstudio/nerd-icons-dired/issues/1
+                 (propertize string 'display string))))
 
 (defun nerd-icons-dired--overlays-in (beg end)
   "Get all nerd-icons-dired overlays between BEG to END."
