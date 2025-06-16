@@ -112,6 +112,7 @@
   "Setup `nerd-icons-dired'."
   (when (derived-mode-p 'dired-mode)
     (setq-local tab-width 1)
+    (advice-add 'dired-do-rename :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-readin :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-revert :around #'nerd-icons-dired--refresh-advice)
     (advice-add 'dired-internal-do-deletions :around #'nerd-icons-dired--refresh-advice)
@@ -130,6 +131,7 @@
 
 (defun nerd-icons-dired--teardown ()
   "Functions used as advice when redisplaying buffer."
+  (advice-remove 'dired-do-rename #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-readin #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-revert #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-internal-do-deletions #'nerd-icons-dired--refresh-advice)
