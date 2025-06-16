@@ -108,19 +108,18 @@
       (nerd-icons-dired--refresh))
     result)) ;; Return the result
 
+(defconst nerd-icons--dired-functions-to-refresh
+  '( dired-readin dired-revert dired-internal-do-deletions dired-insert-subdir
+     dired-create-directory dired-do-redisplay dired-kill-subdir dired-do-kill-lines
+     dired-do-rename)
+  "List of Dired functions that need to refresh the icons.")
+
 (defun nerd-icons-dired--setup ()
   "Setup `nerd-icons-dired'."
   (when (derived-mode-p 'dired-mode)
     (setq-local tab-width 1)
-    (advice-add 'dired-do-rename :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-readin :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-revert :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-internal-do-deletions :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-insert-subdir :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-create-directory :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-do-redisplay :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-kill-subdir :around #'nerd-icons-dired--refresh-advice)
-    (advice-add 'dired-do-kill-lines :around #'nerd-icons-dired--refresh-advice)
+    (dolist (fn nerd-icons--dired-functions-to-refresh)
+      (advice-add fn :around #'nerd-icons-dired--refresh-advice))
     (with-eval-after-load 'dired-narrow
       (advice-add 'dired-narrow--internal :around #'nerd-icons-dired--refresh-advice))
     (with-eval-after-load 'dired-subtree
@@ -131,17 +130,10 @@
 
 (defun nerd-icons-dired--teardown ()
   "Functions used as advice when redisplaying buffer."
-  (advice-remove 'dired-do-rename #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-readin #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-revert #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-internal-do-deletions #'nerd-icons-dired--refresh-advice)
+  (dolist (fn nerd-icons--dired-functions-to-refresh)
+    (advice-remove fn #'nerd-icons-dired--refresh-advice))
   (advice-remove 'dired-narrow--internal #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-subtree-toggle #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-insert-subdir #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-do-kill-lines #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-create-directory #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-do-redisplay #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-kill-subdir #'nerd-icons-dired--refresh-advice)
   (advice-remove 'wdired-abort-changes #'nerd-icons-dired--refresh-advice)
   (nerd-icons-dired--remove-all-overlays))
 
