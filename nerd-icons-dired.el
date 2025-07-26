@@ -51,6 +51,16 @@
   :group 'nerd-icons
   :type 'number)
 
+(defcustom nerd-icons-dired-infix-string "\t"
+  "String inserted between the icon and the file name in the Dired buffer."
+  :group 'nerd-icons
+  :type 'string)
+
+(defcustom nerd-icons-dired-special-prefix-string "  \t"
+  "String inserted before file name of special entries in the Dired buffer."
+  :group 'nerd-icons
+  :type 'string)
+
 (defvar nerd-icons-dired-mode)
 
 (defun nerd-icons-dired--add-overlay (pos string)
@@ -97,8 +107,10 @@
                           (nerd-icons-icon-for-file file :v-adjust nerd-icons-dired-v-adjust)))
                   (inhibit-read-only t))
               (if (member file '("." ".."))
-                  (nerd-icons-dired--add-overlay (dired-move-to-filename) "  \t")
-                (nerd-icons-dired--add-overlay (dired-move-to-filename) (concat icon "\t")))))))
+                  (nerd-icons-dired--add-overlay (dired-move-to-filename)
+                                                 nerd-icons-special-prefix-string)
+                (nerd-icons-dired--add-overlay (dired-move-to-filename)
+                                               (concat icon nerd-icons-dired-infix-string)))))))
       (forward-line 1))))
 
 (defun nerd-icons-dired--refresh-advice (fn &rest args)
