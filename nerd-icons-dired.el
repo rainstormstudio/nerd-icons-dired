@@ -108,7 +108,7 @@
                   (inhibit-read-only t))
               (if (member file '("." ".."))
                   (nerd-icons-dired--add-overlay (dired-move-to-filename)
-                                                 nerd-icons-special-prefix-string)
+                                                 nerd-icons-dired-special-prefix-string)
                 (nerd-icons-dired--add-overlay (dired-move-to-filename)
                                                (concat icon nerd-icons-dired-infix-string)))))))
       (forward-line 1))))
