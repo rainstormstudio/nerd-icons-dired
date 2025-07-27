@@ -135,7 +135,9 @@
     (with-eval-after-load 'dired-narrow
       (advice-add 'dired-narrow--internal :around #'nerd-icons-dired--refresh-advice))
     (with-eval-after-load 'dired-subtree
-      (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice))
+      (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice)
+      (advice-add 'dired-subtree-remove :around #'nerd-icons-dired--refresh-advice)
+      (advice-add 'dired-subtree-cycle :around #'nerd-icons-dired--refresh-advice))
     (with-eval-after-load 'wdired
       (advice-add 'wdired-abort-changes :around #'nerd-icons-dired--refresh-advice))
     (nerd-icons-dired--refresh)))
@@ -146,6 +148,8 @@
     (advice-remove fn #'nerd-icons-dired--refresh-advice))
   (advice-remove 'dired-narrow--internal #'nerd-icons-dired--refresh-advice)
   (advice-remove 'dired-subtree-toggle #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'dired-subtree-remove #'nerd-icons-dired--refresh-advice)
+  (advice-remove 'dired-subtree-cycle #'nerd-icons-dired--refresh-advice)
   (advice-remove 'wdired-abort-changes #'nerd-icons-dired--refresh-advice)
   (nerd-icons-dired--remove-all-overlays))
 
