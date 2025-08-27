@@ -9,16 +9,37 @@ nerd-icons-dired is inspired by [[https://github.com/jtbm37/all-the-icons-dired]
 [[file:screenshots/demo.png]]
 
 * Usage
-add ~nerd-icons-dired~ to the ~load-path~
+
+Add ~nerd-icons-dired~ to the ~load-path~:
+
 #+BEGIN_SRC emacs-lisp
   (require 'nerd-icons)
   ...
   (require 'nerd-icons-dired)
   (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
 #+END_SRC
-or using ~use-package~
+
+or using ~use-package~:
 #+BEGIN_SRC emacs-lisp
   (use-package nerd-icons-dired
     :hook
     (dired-mode . nerd-icons-dired-mode))
+#+END_SRC
+
+** Customization
+
+~nerd-icons-dired~ uses the default ~nerd-icons-icon-for-file~ and ~nerd-icons-icon-for-dir~ for icons. If you want to adjust the icons, simply define your own functions with the same function signatures. For example:
+
+#+BEGIN_SRC emacs-lisp
+(use-package nerd-icons-dired
+  :preface
+  (defun my/nerd-icons-icon-for-file (file)
+    (nerd-icons-icon-for-file file :height 0.9 :v-adjust 0.45))
+
+  (defun my/nerd-icons-icon-for-dir (dir)
+    (nerd-icons-icon-for-dir dir :height 0.9 :v-adjust 0.45))
+
+  :custom
+  (nerd-icons-dired-file-icon-function #'my/nerd-icons-icon-for-file)
+  (nerd-icons-dired-dir-icon-function #'my/nerd-icons-icon-for-dir))
 #+END_SRC
