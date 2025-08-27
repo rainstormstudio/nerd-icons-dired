@@ -41,16 +41,6 @@
 (require 'dired)
 (require 'nerd-icons)
 
-(defface nerd-icons-dired-dir-face
-  '((t nil))
-  "Face for the directory icon."
-  :group 'nerd-icons-faces)
-
-(defcustom nerd-icons-dired-v-adjust 0.01
-  "The default vertical adjustment of the icon in the Dired buffer."
-  :group 'nerd-icons
-  :type 'number)
-
 (defcustom nerd-icons-dired-infix-string "\t"
   "String inserted between the icon and the file name in the Dired buffer."
   :group 'nerd-icons
@@ -60,6 +50,16 @@
   "String inserted before file name of special entries in the Dired buffer."
   :group 'nerd-icons
   :type 'string)
+
+(defcustom nerd-icons-dired-file-icon-function #'nerd-icons-icon-for-file
+  "Function that get icon for file."
+  :group 'nerd-icons
+  :type 'function)
+
+(defcustom nerd-icons-dired-dir-icon-function #'nerd-icons-icon-for-dir
+  "Function that get icon for dir."
+  :group 'nerd-icons
+  :type 'function)
 
 (defvar nerd-icons-dired-mode)
 
@@ -101,10 +101,8 @@
         (let ((file (dired-get-filename 'relative 'noerror)))
           (when file
             (let ((icon (if (file-directory-p file)
-                            (nerd-icons-icon-for-dir file
-                                                     :face 'nerd-icons-dired-dir-face
-                                                     :v-adjust nerd-icons-dired-v-adjust)
-                          (nerd-icons-icon-for-file file :v-adjust nerd-icons-dired-v-adjust)))
+                            (funcall nerd-icons-dired-dir-icon-function file)
+                          (funcall nerd-icons-dired-file-icon-function file)))
                   (inhibit-read-only t))
               (if (member file '("." ".."))
                   (nerd-icons-dired--add-overlay (dired-move-to-filename)
