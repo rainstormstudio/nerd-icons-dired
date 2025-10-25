@@ -111,44 +111,36 @@
                                                (concat icon nerd-icons-dired-infix-string)))))))
       (forward-line 1))))
 
-(defun nerd-icons-dired--refresh-advice (fn &rest args)
-  "Advice function for FN with ARGS."
-  (let ((result (apply fn args))) ;; Save the result of the advised function
-    (when nerd-icons-dired-mode
-      (nerd-icons-dired--refresh))
-    result)) ;; Return the result
+(defun nerd-icons-dired--refresh-advice (&rest _ignored)
+  "Refresh Dired icons when `nerd-icons-dired-mode' is enabled."
+  (when nerd-icons-dired-mode
+    (nerd-icons-dired--refresh)))
 
-(defconst nerd-icons--dired-functions-to-refresh
+(defconst nerd-icons-dired--functions-to-refresh
   '( dired-readin dired-revert dired-internal-do-deletions dired-insert-subdir
      dired-create-directory dired-do-redisplay dired-kill-subdir dired-do-kill-lines
-     dired-do-rename)
-  "List of Dired functions that need to refresh the icons.")
+     dired-do-rename dired-narrow--internal dired-subtree-toggle dired-subtree-remove
+     dired-subtree-cycle wdired-abort-changes)
+  "List of Dired functions that need to refresh the icons." )
+
+(defun nerd-icons-dired--add-advice ()
+  "Add `nerd-icons-dired' advice."
+  (dolist (fn nerd-icons-dired--functions-to-refresh)
+    (advice-add fn :after #'nerd-icons-dired--refresh-advice)))
+
+(defun nerd-icons-dired--remove-advice ()
+  "Remove all `nerd-icons-dired' advice."
+  (dolist (fn nerd-icons-dired--functions-to-refresh)
+    (advice-remove fn #'nerd-icons-dired--refresh-advice)))
 
 (defun nerd-icons-dired--setup ()
   "Setup `nerd-icons-dired'."
   (when (derived-mode-p 'dired-mode)
     (setq-local tab-width 1)
-    (dolist (fn nerd-icons--dired-functions-to-refresh)
-      (advice-add fn :around #'nerd-icons-dired--refresh-advice))
-    (with-eval-after-load 'dired-narrow
-      (advice-add 'dired-narrow--internal :around #'nerd-icons-dired--refresh-advice))
-    (with-eval-after-load 'dired-subtree
-      (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice)
-      (advice-add 'dired-subtree-remove :around #'nerd-icons-dired--refresh-advice)
-      (advice-add 'dired-subtree-cycle :around #'nerd-icons-dired--refresh-advice))
-    (with-eval-after-load 'wdired
-      (advice-add 'wdired-abort-changes :around #'nerd-icons-dired--refresh-advice))
     (nerd-icons-dired--refresh)))
 
 (defun nerd-icons-dired--teardown ()
   "Functions used as advice when redisplaying buffer."
-  (dolist (fn nerd-icons--dired-functions-to-refresh)
-    (advice-remove fn #'nerd-icons-dired--refresh-advice))
-  (advice-remove 'dired-narrow--internal #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-subtree-toggle #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-subtree-remove #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-subtree-cycle #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'wdired-abort-changes #'nerd-icons-dired--refresh-advice)
   (nerd-icons-dired--remove-all-overlays))
 
 ;;;###autoload
@@ -159,6 +151,18 @@
     (if nerd-icons-dired-mode
         (nerd-icons-dired--setup)
       (nerd-icons-dired--teardown))))
+
+;; Register advice on load and unregister on unload.
+;; The advice itself will check if `nerd-icons-dired-mode'
+;; is enabled.
+
+(nerd-icons-dired--add-advice)
+
+(defun nerd-icons-dired-unload-function ()
+  "Unload function for `nerd-icons-dired'."
+  (nerd-icons-dired--remove-advice)
+  ;; continue with standard unloading
+  nil)
 
 (provide 'nerd-icons-dired)
 ;;; nerd-icons-dired.el ends here
