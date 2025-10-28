@@ -99,12 +99,18 @@
                                                (concat icon nerd-icons-dired-infix-string)))))))
       (forward-line 1))))
 
+(defun nerd-icons-dired--refresh ()
+  "Update the display of icons of files in a Dired buffer."
+  (when nerd-icons-dired-mode
+    (nerd-icons-dired--remove-all-overlays)
+    (save-restriction
+      (widen)
+      (nerd-icons-dired--annotate))))
+
 (defun nerd-icons-dired--setup ()
   "Setup `nerd-icons-dired'."
   (setq-local tab-width 1)
-  (save-restriction
-    (widen)
-    (nerd-icons-dired--annotate))
+  (nerd-icons-dired--refresh)
   (add-hook 'dired-after-readin-hook 'nerd-icons-dired--annotate))
 
 (defun nerd-icons-dired--teardown ()
@@ -123,14 +129,6 @@
 
 ;; We advise wdired because it restores the buffer text from a copy on abort,
 ;; and the copy doesn't preserve overlays.
-
-(defun nerd-icons-dired--refresh ()
-  "Update the display of icons of files in a Dired buffer."
-  (when nerd-icons-dired-mode
-    (nerd-icons-dired--remove-all-overlays)
-    (save-restriction
-      (widen)
-      (nerd-icons-dired--annotate))))
 
 (advice-add 'wdired-abort-changes :after #'nerd-icons-dired--refresh)
 
