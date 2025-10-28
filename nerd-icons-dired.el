@@ -67,33 +67,21 @@
   "Add overlay to display STRING at POS."
   (let ((ov (make-overlay (1- pos) pos)))
     (overlay-put ov 'nerd-icons-dired-overlay t)
+    (overlay-put ov 'evaporate t)
     (overlay-put ov 'after-string
                  ;; Workaround for the issue where overlapping faces
                  ;; are not applied
                  ;; https://github.com/rainstormstudio/nerd-icons-dired/issues/1
                  (propertize string 'display string))))
 
-(defun nerd-icons-dired--overlays-in (beg end)
-  "Get all nerd-icons-dired overlays between BEG to END."
-  (cl-remove-if-not
-   (lambda (ov)
-     (overlay-get ov 'nerd-icons-dired-overlay))
-   (overlays-in beg end)))
-
-(defun nerd-icons-dired--overlays-at (pos)
-  "Get nerd-icons-dired overlays at POS."
-  (apply #'nerd-icons-dired--overlays-in `(,pos ,pos)))
-
 (defun nerd-icons-dired--remove-all-overlays ()
   "Remove all `nerd-icons-dired' overlays."
   (save-restriction
     (widen)
-    (mapc #'delete-overlay
-          (nerd-icons-dired--overlays-in (point-min) (point-max)))))
+    (remove-overlays nil nil 'nerd-icons-dired-overlay t)))
 
-(defun nerd-icons-dired--refresh ()
-  "Display the icons of files in a Dired buffer."
-  (nerd-icons-dired--remove-all-overlays)
+(defun nerd-icons-dired--annotate ()
+  "Add icons to all files in the visible region of the buffer."
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
@@ -111,44 +99,17 @@
                                                (concat icon nerd-icons-dired-infix-string)))))))
       (forward-line 1))))
 
-(defun nerd-icons-dired--refresh-advice (fn &rest args)
-  "Advice function for FN with ARGS."
-  (let ((result (apply fn args))) ;; Save the result of the advised function
-    (when nerd-icons-dired-mode
-      (nerd-icons-dired--refresh))
-    result)) ;; Return the result
-
-(defconst nerd-icons--dired-functions-to-refresh
-  '( dired-readin dired-revert dired-internal-do-deletions dired-insert-subdir
-     dired-create-directory dired-do-redisplay dired-kill-subdir dired-do-kill-lines
-     dired-do-rename)
-  "List of Dired functions that need to refresh the icons.")
-
 (defun nerd-icons-dired--setup ()
   "Setup `nerd-icons-dired'."
-  (when (derived-mode-p 'dired-mode)
-    (setq-local tab-width 1)
-    (dolist (fn nerd-icons--dired-functions-to-refresh)
-      (advice-add fn :around #'nerd-icons-dired--refresh-advice))
-    (with-eval-after-load 'dired-narrow
-      (advice-add 'dired-narrow--internal :around #'nerd-icons-dired--refresh-advice))
-    (with-eval-after-load 'dired-subtree
-      (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice)
-      (advice-add 'dired-subtree-remove :around #'nerd-icons-dired--refresh-advice)
-      (advice-add 'dired-subtree-cycle :around #'nerd-icons-dired--refresh-advice))
-    (with-eval-after-load 'wdired
-      (advice-add 'wdired-abort-changes :around #'nerd-icons-dired--refresh-advice))
-    (nerd-icons-dired--refresh)))
+  (setq-local tab-width 1)
+  (save-restriction
+    (widen)
+    (nerd-icons-dired--annotate))
+  (add-hook 'dired-after-readin-hook 'nerd-icons-dired--annotate))
 
 (defun nerd-icons-dired--teardown ()
   "Functions used as advice when redisplaying buffer."
-  (dolist (fn nerd-icons--dired-functions-to-refresh)
-    (advice-remove fn #'nerd-icons-dired--refresh-advice))
-  (advice-remove 'dired-narrow--internal #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-subtree-toggle #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-subtree-remove #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'dired-subtree-cycle #'nerd-icons-dired--refresh-advice)
-  (advice-remove 'wdired-abort-changes #'nerd-icons-dired--refresh-advice)
+  (remove-hook 'dired-after-readin-hook 'nerd-icons-dired--annotate)
   (nerd-icons-dired--remove-all-overlays))
 
 ;;;###autoload
@@ -159,6 +120,23 @@
     (if nerd-icons-dired-mode
         (nerd-icons-dired--setup)
       (nerd-icons-dired--teardown))))
+
+;; We advise wdired because it restores the buffer text from a copy on abort,
+;; and the copy doesn't preserve overlays.
+
+(defun nerd-icons-dired--refresh ()
+  "Update the display of icons of files in a Dired buffer."
+  (when nerd-icons-dired-mode
+    (nerd-icons-dired--remove-all-overlays)
+    (save-restriction
+      (widen)
+      (nerd-icons-dired--annotate))))
+
+(advice-add 'wdired-abort-changes :after #'nerd-icons-dired--refresh)
+
+(defun nerd-icons-dired-unload-function ()
+  "Unload function for `nerd-icons-dired'."
+  (advice-remove 'wdired-abort-changes #'nerd-icons-dired--refresh))
 
 (provide 'nerd-icons-dired)
 ;;; nerd-icons-dired.el ends here
