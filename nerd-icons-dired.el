@@ -86,7 +86,7 @@
     (goto-char (point-min))
     (while (not (eobp))
       (when (dired-move-to-filename nil)
-        (let ((file (dired-get-filename 'relative 'noerror)))
+        (let ((file (ignore-errors (dired-get-filename 'relative 'noerror))))
           (when file
             (let ((icon (if (file-directory-p file)
                             (funcall nerd-icons-dired-dir-icon-function file)
