@@ -111,11 +111,11 @@
   "Setup `nerd-icons-dired'."
   (setq-local tab-width 1)
   (nerd-icons-dired--refresh)
-  (add-hook 'dired-after-readin-hook 'nerd-icons-dired--annotate))
+  (add-hook 'dired-after-readin-hook 'nerd-icons-dired--refresh))
 
 (defun nerd-icons-dired--teardown ()
   "Functions used as advice when redisplaying buffer."
-  (remove-hook 'dired-after-readin-hook 'nerd-icons-dired--annotate)
+  (remove-hook 'dired-after-readin-hook 'nerd-icons-dired--refresh)
   (nerd-icons-dired--remove-all-overlays))
 
 ;;;###autoload
